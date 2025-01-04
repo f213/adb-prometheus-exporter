@@ -13,7 +13,7 @@ class Temperature:
     status: int
 
     @classmethod
-    def from_temperature_line(cls, line) -> "Temperature":
+    def from_temperature_line(cls, line: str) -> "Temperature":
         parsed = dict()
         for line in re.findall(r"(\w+=[^,}]+)", line):
             key, value = line.split("=")
