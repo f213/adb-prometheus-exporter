@@ -5,6 +5,10 @@ description = ""
 authors = ["Fedor Borshev <fedor@borshev.com>"]
 readme = "README.md"
 
+
+[tool.ruff]
+line-length = 160
+
 [tool.poetry.dependencies]
 python = "^3.12"
 

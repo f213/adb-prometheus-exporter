@@ -1,7 +1,8 @@
+from collections import UserList
 from dataclasses import dataclass, field
 from decimal import Decimal
-import subprocess
 import re
+import subprocess
 
 
 @dataclass
@@ -26,11 +27,19 @@ class Temperature:
         )
 
 
+class TemperatureList(UserList[Temperature]):
+    def __getattr__(self, name: str) -> Temperature:
+        for temperature in self.data:
+            if temperature.sensor.lower() == name.lower():
+                return temperature
+        raise KeyError(f"Temperature sensor {name} not found")
+
+
 @dataclass
 class Device:
     serial: str
     is_authorized: bool = False
-    temperatures: list[Temperature] = field(default_factory=list)
+    temperatures: TemperatureList = field(default_factory=TemperatureList)
 
     @classmethod
     def list_all(cls, populate: bool = False) -> list["Device"]:
@@ -66,13 +75,24 @@ class Device:
                 temperatures_are_current = True
             if not temperatures_are_current:
                 continue
-            if (
-                "Temperature{" in line
-            ):  # } fu, copilot, you ruin my autoindent if i dont close this bracket
+            if "Temperature{" in line:  # } fu, copilot, you ruin my autoindent if i dont close this bracket
                 self.temperatures.append(Temperature.from_temperature_line(line))
 
 
 if __name__ == "__main__":
+    temperature_list = TemperatureList(
+        [
+            Temperature(sensor="cpu", value=Decimal("40.0"), type=1, status=1),
+            Temperature(sensor="GpU", value=Decimal("50.0"), type=1, status=1),
+        ]
+    )
+
+    assert temperature_list.cpu.value == Decimal("40.0"), "__getattr__ should work"
+    assert temperature_list.gpu.value == Decimal("50.0"), "__getattr__ should ignore case"
+    assert temperature_list.GPU.value == Decimal("50.0"), "__getattr__ should ignore case"
+
     devices = Device.list_all(populate=True)
     for device in devices:
-        print(device.temperatures)
+        print(f"Device \033[94m{device.serial}\033[0m is connected, authorized: \033[92m{device.is_authorized}\033[0m")
+        for temperature in device.temperatures:
+            print(f"\tSensor \033[92m{temperature.sensor}\033[0m has value \033[92m{temperature.value}\033[0m")
