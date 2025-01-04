@@ -7,3 +7,7 @@ fmt:
 
 dev:
 	watchmedo auto-restart --directory=adb_prometheus_exporter --pattern=*.py --recursive -- python -- -m adb_prometheus_exporter.exporter
+
+
+test:
+	python -m adb_prometheus_exporter.adb
