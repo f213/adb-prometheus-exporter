@@ -9,7 +9,7 @@ REGISTRY.register(AdbTemperatureCollector())
 
 if __name__ == "__main__":
     port = os.getenv("PORT", 8000)
-    print(f"Starting server on port \033[92m{port}\033[0m")
+    print(f"Starting server on port \033[92m{port}\033[0m...")
     app = make_wsgi_app()
     server = make_server("", 8000, app)
     server.serve_forever()
