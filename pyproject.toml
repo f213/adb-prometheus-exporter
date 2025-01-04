@@ -11,11 +11,13 @@ line-length = 160
 
 [tool.poetry.dependencies]
 python = "^3.12"
+prometheus-client = "^0.21.1"
 
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.14.1"
 ruff = "^0.8.5"
+watchdog = {extras = ["watchmedo"], version = "^6.0.0"}
 
 [build-system]
 requires = ["poetry-core"]
