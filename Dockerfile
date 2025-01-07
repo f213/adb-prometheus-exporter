@@ -20,15 +20,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends adb dumb-init
 COPY --from=deps-compile /requirements.txt /
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN useradd -m -d /home/exporter -s /sbin/nologin exporter \
-    && mkdir /home/exporter/.android \
-    && chown -R exporter:exporter /home/exporter/.android
+RUN mkdir /home/.android
 
-VOLUME /home/exporter/.android
+VOLUME /home/.android
 
 WORKDIR /src
 COPY adb_prometheus_exporter /src/adb_prometheus_exporter
 
+ENV PORT=8000
+ENV HOME=/home
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-USER exporter
 CMD ["python", "-m", "adb_prometheus_exporter.exporter"]
